@@ -1,0 +1,18 @@
+# Ignore virtual environment folder, my environment is called "myenv"
+myenv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+
+# jupyter notebook
+.ipynb_checkpoints/
+*.ipynb
+
+
+# ignore the macos file
+.DS_Store
+src/.DS_Store
+
+
