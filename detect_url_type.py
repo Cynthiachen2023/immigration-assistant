@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 def analyze_url(url):
-    result = {"url": url, "status": "", "type": "", "has_table": False, "is_js_rendered": False, "is_json_api": False}
+    result = {"urls": url, "status": "", "type": "", "has_table": False, "is_js_rendered": False, "is_json_api": False}
     try:
         resp = requests.get(url, timeout=10)
         html = resp.text
@@ -39,6 +39,30 @@ def analyze_url(url):
 
     return result
 
+def classify_urls(file_path, source):
+    df = pd.read_csv(file_path, header=None, names=['urls'])
+    df["source"] = source
+    df["url_clean"] = df["urls"].str.replace(r"^https?://[^/]+/", "", regex=True)
+    split_df = df["url_clean"].str.split("/", expand=True)
+    for i in split_df.columns:
+        df[f"level_{i+1}"] = split_df[i]
 
-df1 = pd.read_csv('immi_homefair_sitemap.txt',header=None, names=['urls'])
-df2 = pd.read_csv('"wa_sitemap.txt',header=None, names=['urls'])
+    analysis_results = []
+    for url in df["urls"]:
+        print(f"Analyzing: {url}")
+        analysis_result = analyze_url(url)
+        print(f"finished: {url} - type: {analysis_result['type']}")
+        analysis_results.append(analysis_result)
+    analysis_df = pd.DataFrame(analysis_results)
+
+    df = df.merge(analysis_df, on="urls", how="left")
+
+    return df
+
+# australia immigration homefair
+df_au = classify_urls('immi_homefair_sitemap.txt', 'australia_homefair')
+
+# wa immgration
+df_wa = classify_urls('wa_sitemap.txt', 'wa')
+
+
