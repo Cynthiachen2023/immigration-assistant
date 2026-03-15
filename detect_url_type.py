@@ -1,5 +1,4 @@
 import requests
-from bs4 import BeautifulSoup
 import pandas as pd
 
 def analyze_url(url):
@@ -64,5 +63,6 @@ df_au = classify_urls('immi_homefair_sitemap.txt', 'australia_homefair')
 
 # wa immgration
 df_wa = classify_urls('wa_sitemap.txt', 'wa')
-
+df_all = pd.concat([df_au, df_wa], ignore_index=True)
+df_all.to_csv("url_type_results.csv", index=False, encoding="utf-8-sig")
 
